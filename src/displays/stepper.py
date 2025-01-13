@@ -1,6 +1,8 @@
 import sys
 import time
 from collections import deque
+import pigpio
+import pigpio_start
 
 pi = pigpio.pi()
 

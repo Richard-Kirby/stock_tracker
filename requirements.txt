@@ -1,2 +1,4 @@
-matplotlib
 scrollphathd
+smbus
+pigpio
+RPi.GPIO
