@@ -4,7 +4,6 @@ from collections import deque
 import pigpio
 import pigpio_start
 
-pi = pigpio.pi()
 
 FULL_STEP_SEQUENCE = (
   (1, 1, 0, 0),
@@ -31,16 +30,16 @@ class StepperMotor:
         if not isinstance(pi, pigpio.pi):
             raise TypeError("Is not pigpio.pi instance.")
 
-        pi.set_mode(pin1, pigpio.OUTPUT)
-        pi.set_mode(pin2, pigpio.OUTPUT)
-        pi.set_mode(pin3, pigpio.OUTPUT)
-        pi.set_mode(pin4, pigpio.OUTPUT)
+        self.pi = pi
+        self.pi.set_mode(pin1, pigpio.OUTPUT)
+        self.pi.set_mode(pin2, pigpio.OUTPUT)
+        self.pi.set_mode(pin3, pigpio.OUTPUT)
+        self.pi.set_mode(pin4, pigpio.OUTPUT)
         self.pin1 = pin1
         self.pin2 = pin2
         self.pin3 = pin3
         self.pin4 = pin4
 
-        self.pi = pi
         self.delay_after_step = delay_after_step
         self.deque = deque(sequence)
 
@@ -64,6 +63,9 @@ class StepperMotor:
 
 
 if __name__ == "__main__":
+
+    pi = pigpio.pi()
+
     while True:
         try:
             stepper = StepperMotor(pi, 26, 13, 21, 20, sequence= HALF_STEP_SEQUENCE,

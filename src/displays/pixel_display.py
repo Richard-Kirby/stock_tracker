@@ -60,23 +60,35 @@ class ScrollDisplay:
         print(scrollphathd.display)
         scroll_message(font, message)
 
+    def scroll_message(self, font, message):
+        scrollphathd.display = None
+        scrollphathd.setup(i2c_dev=self.i2c_channel)
+        scrollphathd.set_brightness(self.brightness)
+        scrollphathd.rotate(self.rotation)
 
-displays = [(0, "0 disp 0", 180),
-            (1, "1 disp 1", 180),
+        print(scrollphathd.display)
+        scroll_message(font, message)
+
+
+displays = [(0, "0 disp 0", 0),
+            (1, "1 disp 1", 0),
             (3, "3 disp 3", 0),
             (4, "4 disp 4", 0)]
 
-while True:
-    for display in displays:
-        try:
-            print(display[1])
-            scroll_display0 = ScrollDisplay(display[0], rotation = display[2])
-            scroll_display0.scroll_message(font5x7, display[1])
-        except Exception as inst:
-            print(type(inst))
-            print(inst.args)
-            print(inst)
+if __name__ == '__main__':
 
+    while True:
+        for display in displays:
+            try:
+                print(display[1])
+                scroll_display0 = ScrollDisplay(display[0], rotation = display[2])
+                scroll_display0.scroll_message(font5x7, display[1])
+            except Exception as inst:
+                print(type(inst))
+                print(inst.args)
+                print(inst)
+
+        
 
 
 """
