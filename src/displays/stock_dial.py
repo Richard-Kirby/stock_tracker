@@ -45,23 +45,21 @@ class StockDial(threading.Thread):
             step_num = 0
             while self.zeroed == 0:
 
-                print(f"Zeroed?{self.zeroed}")
+                # print(f"Zeroed?{self.zeroed}")
                 self.stepper_control.clockwise_step()
 
                 # Check whether zero has been found yet.
-                print("sz2")
                 self.zeroed = self.zero_switch.return_state()
                 step_num += 1
 
-                print("sz3")
-
-                if self.zeroed is 1:
+                # Zeroing allows the stepper to calibrate
+                if self.zeroed == 1:
                     # found the switch, so set current position to the offset
                     self.current_position = self.offset
 
                     print(f"curr position = {self.current_position}")
 
-                print(f"Zeroed?{self.zeroed}")
+                # print(f"Zeroed?{self.zeroed}")
 
                 if step_num > 450:
                     raise ZeroException()
@@ -78,17 +76,17 @@ class StockDial(threading.Thread):
         at_position = False
 
         while at_position is False:
-            print("get to position")
+            # print("get to position")
 
             error = cmd_position - self.current_position
 
             if error > 0:
-                print(f"clockwise {error}")
+                # print(f"clockwise {error}")
                 self.stepper_control.clockwise_step()
                 self.current_position += 1
 
             elif error < 0:
-                print(f"counter clockwise {error}")
+                # print(f"counter clockwise {error}")
                 self.stepper_control.counter_clockwise_step()
                 self.current_position -= 1
 
@@ -105,7 +103,7 @@ class StockDial(threading.Thread):
             while not self.queue.empty():
                 target_position = int(self.queue.get_nowait())
 
-            print(f"target_position {target_position}")
+            # print(f"target_position {target_position}")
 
             if target_position is not None:
                 self.goto_position(target_position)
@@ -118,7 +116,7 @@ if __name__ == "__main__":
 
     # Set up the stepper
     stepper_obj = stepper.StepperMotor(pi, 26, 13, 21, 20, sequence=stepper.HALF_STEP_SEQUENCE,
-                                       delay_after_step=0.001)
+                                       delay_after_step=0.01)
     # Set up the zero point switch
     zero_switch_obj = reed.ReedSwitch(pi, 4)
 
