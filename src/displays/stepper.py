@@ -2,7 +2,8 @@ import sys
 import time
 from collections import deque
 import pigpio
-import pigpio_start
+
+from . import pigpio_start
 
 
 FULL_STEP_SEQUENCE = (

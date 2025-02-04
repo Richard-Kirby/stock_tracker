@@ -3,9 +3,9 @@ import queue
 import time
 
 import pigpio
-import pigpio_start
-import stepper
-import reed
+import displays.pigpio_start
+from . import stepper
+from . import reed
 
 
 class ZeroException(Exception):

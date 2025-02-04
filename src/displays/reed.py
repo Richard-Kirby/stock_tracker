@@ -1,4 +1,4 @@
-import pigpio_start
+from . import pigpio_start
 import RPi.GPIO as GPIO
 import pigpio
 

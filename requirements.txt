@@ -2,3 +2,4 @@ scrollphathd
 smbus
 pigpio
 RPi.GPIO
+yfinance
