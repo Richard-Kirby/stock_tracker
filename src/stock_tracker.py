@@ -1,5 +1,6 @@
 import threading
 import time
+import math
 
 import pigpio
 
@@ -45,36 +46,64 @@ class StockTracker(threading.Thread):
 
         self.ticker_data = stock_price_data.TickerData(['MSFT', 'CSCO',  'GOOG', 'RPI.L'])
 
+    def set_scale(self, center_value, min_ratio, max_ratio):
+        low = center_value * min_ratio
+        high = center_value * max_ratio
+
+        self.display_manager.queue.put_nowait({"name": 'bottom_left', "font": font3x5,
+                                               "message": f"{low:.0f}"})
+        self.display_manager.queue.put_nowait({"name": 'bottom_right', "font": font3x5,
+                                               "message": f"{high:.0f}"})
+
+        return low, high
+
     def run(self):
 
         while True:
 
-            ticker_data_frame = self.ticker_data.get_ticker()
+            ticker_data_frame = self.ticker_data.get_ticker(period='5d', interval='1d')
+
+            # print(ticker_data_frame.columns)
+            # Get the previous day's closing value.
+            last_close = ticker_data_frame['Close', 'RPI.L'].iloc[-2]
+
+            print(f"last close {last_close}")
+
+            ticker_data_frame = self.ticker_data.get_ticker(period='1d', interval='5m')
 
             stock_dict = ticker_data_frame['Close', 'RPI.L'].to_dict()
 
-            # print(stock_dict)
-
-            bottom_price = 700
-            top_price = 800
-            center = int((top_price - bottom_price)/ 2)
-
-            self.display_manager.queue.put_nowait({"name": 'bottom_left', "font": font3x5, "message": f"{bottom_price}"})
-            self.display_manager.queue.put_nowait({"name": 'bottom_right', "font": font3x5, "message": f"{top_price}"})
+            bottom_price, top_price  = self.set_scale(last_close, 0.9, 1.1)
+            print(stock_dict)
 
             for key in stock_dict:
-                print(str(key)[:10], str(key)[11:19], f"{stock_dict[key]:.2f}")
-                self.display_manager.queue.put_nowait({"name": 'top_left', "font": font3x5, "message": f"{str(key)[11:16]}"})
-                self.display_manager.queue.put_nowait({"name": 'top_right', "font": font3x5, "message": f"{stock_dict[key]:.2f}"})
 
-                ratio_bottom_to_top = (stock_dict[key] - bottom_price) / (top_price - bottom_price)
+                if math.isnan(stock_dict[key]) is False:
+                    try:
+                        value = float(stock_dict[key])
 
-                needle_loc = (ratio_bottom_to_top - 0.5) * 200
-                print(f"{needle_loc}")
+                        ratio_bottom_to_top = (value - bottom_price) / (top_price - bottom_price)
 
-                print(f"{stock_dict[key]} {top_price} {bottom_price} {ratio_bottom_to_top} {needle_loc}")
+                        needle_loc = (ratio_bottom_to_top - 0.5) * 200
+                        # print(f"{needle_loc}")
 
-                self.stock_dial_disp.queue.put_nowait(int(needle_loc))
+                        print(f"key {key} , Price {stock_dict[key]}, Top {top_price}, bottom {bottom_price}, "
+                              f"ratio {ratio_bottom_to_top}, needle loc {needle_loc}")
+
+                        print(str(key)[:10], str(key)[11:19], f"{stock_dict[key]:.0f}")
+                        self.display_manager.queue.put_nowait({"name": 'top_left', "font": font3x5,
+                                                               "message": f"{str(key)[11:16]}"})
+                        self.display_manager.queue.put_nowait({"name": 'top_right', "font": font3x5,
+                                                               "message": f"{stock_dict[key]:.0f}"})
+
+                        self.stock_dial_disp.queue.put_nowait(int(needle_loc))
+                    except ValueError:
+                        print(f"Value was not a float {stock_dict[key]}")
+
+                    except Exception as inst:
+                        print(type(inst))
+                        print(inst.args)
+                        print(inst)
 
                 time.sleep(3)
 

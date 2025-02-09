@@ -57,7 +57,7 @@ class StockDial(threading.Thread):
                     # found the switch, so set current position to the offset
                     self.current_position = self.offset
 
-                    print(f"curr position = {self.current_position}")
+                    # print(f"curr position = {self.current_position}")
 
                 # print(f"Zeroed?{self.zeroed}")
 
@@ -72,7 +72,7 @@ class StockDial(threading.Thread):
     # Goes to the defined position, relative to neutral position (not zero as defined by the reed switch).
     def goto_position(self, cmd_position):
 
-        print(f"Goto position {cmd_position}")
+        # print(f"Goto position {cmd_position}")
         at_position = False
 
         while at_position is False:
@@ -92,7 +92,7 @@ class StockDial(threading.Thread):
 
             # error must be zero, so at position is now True.
             else:
-                print("at position")
+                # print("at position")
                 at_position = True
 
     def run(self):

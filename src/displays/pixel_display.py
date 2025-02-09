@@ -85,9 +85,9 @@ class PixelDisplayManager(threading.Thread):
             new_display_obj = ScrollDisplay(display["channel"], display["brightness"],
                                             display["rotation"])
             self.displays[display["name"]] = new_display_obj
-            print(display)
+            # print(display)
 
-        print(self.displays)
+        # print(self.displays)
 
     # Function to run when the thread is started. It waits for messages via the queue and writes to the
     # desired display.
@@ -97,9 +97,9 @@ class PixelDisplayManager(threading.Thread):
             if not self.queue.empty():
                 display_cmd = self.queue.get_nowait()
                 print(display_cmd)
-                print(display_cmd["message"])
+                # print(display_cmd["message"])
 
-                print(f"Display {self.displays[display_cmd['name']]}")
+                # print(f"Display {self.displays[display_cmd['name']]}")
 
                 self.displays[display_cmd["name"]].scroll_message(display_cmd["font"],
                                                                   display_cmd["message"])

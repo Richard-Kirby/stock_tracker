@@ -9,6 +9,7 @@ class TickerData:
     # Return the ticker data asked for. Returns as a Panda DataFrame, which can then be manipulated as needed.
     def get_ticker(self, period='1d', interval='5m'):
         data = yf.download(self.symbols, period=period, interval=interval)
+        print(data)
         return data
 
 
@@ -19,7 +20,8 @@ if __name__ == '__main__':
 
     rpi_array = ticker_data_frame['Close', 'RPI.L'].to_dict()
 
-    print(rpi_array)
+    # print(rpi_array)
 
     for key in rpi_array:
-        print(str(key)[:10], str(key)[11:19], f"{rpi_array[key]:.2f}")
+        # print(str(key)[:10], str(key)[11:19], f"{rpi_array[key]:.2f}")
+        pass
