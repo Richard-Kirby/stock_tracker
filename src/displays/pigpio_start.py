@@ -14,4 +14,4 @@ if len(out.strip()) == 0:
     os.system("sudo pigpiod")
     time.sleep(3)
 
-print("pigpio start")
+# print("pigpio start")

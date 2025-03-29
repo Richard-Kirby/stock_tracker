@@ -1,3 +1,4 @@
+adafruit-circuitpython-is31fl3731
 scrollphathd
 smbus
 pigpio

@@ -1,9 +1,14 @@
 import threading
 import queue
 import time
+import pathlib
+
+mod_path = pathlib.Path(__file__).parent
+print(mod_path)
 
 import pigpio
-import displays.pigpio_start
+# import displays.pigpio_start
+
 from . import stepper
 from . import reed
 
@@ -54,8 +59,17 @@ class StockDial(threading.Thread):
 
                 # Zeroing allows the stepper to calibrate
                 if self.zeroed == 1:
+
                     # found the switch, so set current position to the offset
                     self.current_position = self.offset
+
+                    print(f"Detected switch {self.current_position}")
+                    # Go to the 0 position
+                    time.sleep(5)
+                    self.goto_position(0)
+
+                    print("Should be top of the dial.")
+                    time.sleep(5)
 
                     # print(f"curr position = {self.current_position}")
 
@@ -121,7 +135,7 @@ if __name__ == "__main__":
     zero_switch_obj = reed.ReedSwitch(pi, 4)
 
     # Create the stock dial.
-    stock_dial = StockDial(stepper_obj, zero_switch_obj, 20)
+    stock_dial = StockDial(stepper_obj, zero_switch_obj, 2)
 
     # Go to zero, then do a few other moves.
     stock_dial.seek_zero()

@@ -9,7 +9,7 @@ class TickerData:
     # Return the ticker data asked for. Returns as a Panda DataFrame, which can then be manipulated as needed.
     def get_ticker(self, period='1d', interval='5m'):
         data = yf.download(self.symbols, period=period, interval=interval)
-        print(data)
+        # print(data)
         return data
 
 

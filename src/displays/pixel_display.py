@@ -96,7 +96,7 @@ class PixelDisplayManager(threading.Thread):
         while True:
             if not self.queue.empty():
                 display_cmd = self.queue.get_nowait()
-                print(display_cmd)
+                # print(display_cmd)
                 # print(display_cmd["message"])
 
                 # print(f"Display {self.displays[display_cmd['name']]}")

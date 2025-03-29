@@ -25,6 +25,7 @@ class StockTracker(threading.Thread):
 
         # Display manager sets up the displays and displays things as needed via a message queue.
         self.display_manager = pixel_display.PixelDisplayManager(pixel_displays_list)
+        self.display_manager.daemon = True
         self.display_manager.start()
 
         # Set up the Stock Price Dial.
@@ -37,10 +38,11 @@ class StockTracker(threading.Thread):
         zero_switch_obj = reed.ReedSwitch(self.pi, 4)
 
         # Create the stock dial.
-        self.stock_dial_disp = stock_dial.StockDial(stepper_obj, zero_switch_obj, 20)
+        self.stock_dial_disp = stock_dial.StockDial(stepper_obj, zero_switch_obj, 10)
 
         # Go to zero, then do a few other moves.
         self.stock_dial_disp.seek_zero()
+        self.stock_dial_disp.daemon = True
 
         self.stock_dial_disp.start()
 
@@ -67,14 +69,14 @@ class StockTracker(threading.Thread):
             # Get the previous day's closing value.
             last_close = ticker_data_frame['Close', 'RPI.L'].iloc[-2]
 
-            print(f"last close {last_close}")
+            # print(f"last close {last_close}")
 
             ticker_data_frame = self.ticker_data.get_ticker(period='1d', interval='5m')
 
             stock_dict = ticker_data_frame['Close', 'RPI.L'].to_dict()
 
-            bottom_price, top_price  = self.set_scale(last_close, 0.9, 1.1)
-            print(stock_dict)
+            bottom_price, top_price = self.set_scale(last_close, 0.95, 1.05)
+            # print(stock_dict)
 
             for key in stock_dict:
 
@@ -87,10 +89,10 @@ class StockTracker(threading.Thread):
                         needle_loc = (ratio_bottom_to_top - 0.5) * 200
                         # print(f"{needle_loc}")
 
-                        print(f"key {key} , Price {stock_dict[key]}, Top {top_price}, bottom {bottom_price}, "
-                              f"ratio {ratio_bottom_to_top}, needle loc {needle_loc}")
+                        # print(f"key {key} , Price {stock_dict[key]}, Top {top_price}, bottom {bottom_price}, "
+                        #      f"ratio {ratio_bottom_to_top}, needle loc {needle_loc}")
 
-                        print(str(key)[:10], str(key)[11:19], f"{stock_dict[key]:.0f}")
+                        # print(str(key)[:10], str(key)[11:19], f"{stock_dict[key]:.0f}")
                         self.display_manager.queue.put_nowait({"name": 'top_left', "font": font3x5,
                                                                "message": f"{str(key)[11:16]}"})
                         self.display_manager.queue.put_nowait({"name": 'top_right', "font": font3x5,
@@ -112,4 +114,5 @@ class StockTracker(threading.Thread):
 
 if __name__ == "__main__":
     stock_tracker = StockTracker()
+
     stock_tracker.start()
